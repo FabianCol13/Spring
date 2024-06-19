@@ -4,7 +4,9 @@ package com.fabiancol.controlador;
 import com.fabiancol.excepcion.ExcepcionRecursoNoEncontrado;
 import com.fabiancol.modelo.Empleado;
 import com.fabiancol.servicio.IEmpleadoServicio;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -42,11 +46,36 @@ public class EmpleadoControlador {
     }
 
     @GetMapping("/empleados/{id}")
-    public ResponseEntity<Empleado>consultarEmpleadoId(@PathVariable Integer id) {
+    public ResponseEntity<Empleado> consultarEmpleadoId(@PathVariable Integer id) {
         Empleado empleado = empleadoServicio.buscarEmpleadoPorId(id);
         if (empleado == null) {
             throw new ExcepcionRecursoNoEncontrado("No se encontro el Id del empleado" + id);
         }
         return ResponseEntity.ok(empleado);
     }
+
+    @PutMapping("/empleados/{id}")
+    public ResponseEntity<Empleado> ModificarEmpleadoId(@PathVariable Integer id, @RequestBody Empleado empleadoObj) {
+        Empleado empleado = empleadoServicio.buscarEmpleadoPorId(id);
+        if (empleado == null) {
+            throw new ExcepcionRecursoNoEncontrado("No se encontro el Id del empleado" + id);
+        }
+        empleado.setNombreEmpleado(empleadoObj.getNombreEmpleado());
+        empleado.setDepartamentoEmpleado(empleadoObj.getDepartamentoEmpleado());
+        empleado.setSueldoEmpleado(empleadoObj.getSueldoEmpleado());
+        empleadoServicio.guardarEmpleado(empleado);
+        return ResponseEntity.ok(empleado);
+
+    }
+    
+        @DeleteMapping("/empleados/{id}")
+        public ResponseEntity<Map<String,Boolean>> EliminarEmpleadoId(@PathVariable Integer id) {
+        Empleado empleado = empleadoServicio.buscarEmpleadoPorId(id);
+          if (empleado == null) 
+            throw new ExcepcionRecursoNoEncontrado("No se encontro el Id del empleado" + id);
+        empleadoServicio.eliminarEmpleado(empleado);
+        Map<String,Boolean> respuesta = new HashMap<>();
+        respuesta.put("Eliminado", Boolean.TRUE);
+        return ResponseEntity.ok(respuesta);
+        }
 }
