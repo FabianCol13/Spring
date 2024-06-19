@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("rh-sena")
-@CrossOrigin(value = "http://locahost:3000")
+@CrossOrigin(value = "http://localhost:3000")
 public class EmpleadoControlador {
 
      private static final Logger logger =
